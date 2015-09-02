@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")
-  spec.bindir        = 'exe'
+  spec.bindir        = 'bin'
   spec.executables   = ['lgv']
   spec.require_paths = ['lib']
 
