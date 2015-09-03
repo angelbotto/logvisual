@@ -16,6 +16,8 @@ module Logvisual
       req.add_field('AUTHORIZATION', token) if token
       req.body = body
       JSON.parse(http.request(req).body)
+    rescue
+      abort 'Need Internet!'
     end
   end
 end
