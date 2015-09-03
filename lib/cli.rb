@@ -47,6 +47,7 @@ class LogvisualCli
     puts '----- task:list List tasks'
     puts '----- task:create Create task'
     puts ''
+    puts 'ola k ace '
   end
 
   private
