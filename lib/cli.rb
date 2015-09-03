@@ -36,7 +36,17 @@ class LogvisualCli
   end
 
   def show_help
-    puts 'Hola que ace'
+    puts 'Logvisual version ' +  Logvisual::VERSION
+
+    puts ''
+    puts '-- Auth'
+    puts '----- auth:signup Create account'
+    puts '----- auth:signin Login account'
+    puts ''
+    puts '-- Task'
+    puts '----- task:list List tasks'
+    puts '----- task:create Create task'
+    puts ''
   end
 
   private
