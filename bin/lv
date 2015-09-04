@@ -1,0 +1,89 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'commander/import'
+require 'logvisual'
+
+# Constants
+@file_path = File.expand_path('~/.logvisual')
+
+def session(type)
+  abort 'You are already connected!' if File.exist?(@file_path)
+  
+  email = ask("email: ")
+  password = ask("password:  ") { |q| q.echo = "*" }
+
+  result =  case type
+              when :signup then Logvisual::Auth.signup(email, password)
+              when :signin then Logvisual::Auth.signin(email, password)
+              else Logvisual::Auth.signup(email, password)
+              end
+  if result.include?('user')
+    File.write(@file_path, result['user']['token'])
+    puts 'Welcome! ' + result['user']['email']
+  else
+    puts 'Error with your data try again.'
+  end
+end
+
+program :version, Logvisual::VERSION
+program :description, 'Command line tools for logvisual.co'
+program :help, 'Website', 'https://logvisual.co'
+program :help_formatter, :compact
+
+command :login do |c|
+  c.syntax = 'lv login'
+  c.summary = 'Login to your account'
+  c.description = 'Signin in your personal account in logvisual.co and track all :)'
+  c.action do |args, options|
+    session(:signin)
+  end
+end
+
+command :signup do |c|
+  c.syntax = 'lv signup'
+  c.summary = 'Create new account.'
+  c.description = 'Create new account in logvisual.co and track all :)'
+  c.action do |args, options|
+    session(:signup)
+  end
+end
+
+command :logout do |c|
+  c.syntax = 'lv logout'
+  c.summary = 'Logout to your account in this machine'
+  c.description = 'Remove all information off logvisual account this machine.'
+  c.action do |args, options|
+    File.delete(@file_path)
+    say 'Logout..'
+  end
+end
+
+command :create do |c|
+  c.syntax = 'lv create "[tasl content]"'
+  c.summary = 'Create new task in your account'
+  c.description = 'Create task for your account in logvisual.co'
+  c.example 'Create new task', 'lv create "Finished models for user in #logvisual"'
+  c.action do |args, options|
+    abort 'Please login, first' unless File.exist?(@file_path)
+    abort 'Please send task use "lv create --help for help"' if args.empty?
+    task = Logvisual::Task.create(args[0], File.read(@file_path))
+    say 'Task created: ' + task['task']['content']
+  end
+end
+alias_command :n, :create
+
+command :list do |c|
+  c.syntax = 'lv list'
+  c.summary = 'List last 10 tasks your added'
+  c.description = ''
+  c.example 'description', 'command example'
+  c.option '--some-switch', 'Some switch that does something'
+  c.action do |args, options|
+    abort 'Please login, first' unless File.exist?(@file_path)
+    say '10 last tasks: '
+    Logvisual::Task.list(File.read(@file_path)).each do |task|
+      say task['task']['content']
+    end
+  end
+end
+alias_command :l, :create
