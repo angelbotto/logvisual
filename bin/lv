@@ -86,4 +86,4 @@ command :list do |c|
     end
   end
 end
-alias_command :l, :create
+alias_command :l, :list
